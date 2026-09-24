@@ -1,0 +1,77 @@
+services:
+  gateway:
+    image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile-dockers-gateway:latest
+    # 本地首次部署可改为 build: ./gateway
+    container_name: turnstile-gateway
+    ports:
+      - "8081:8081"
+    environment:
+      TZ: UTC
+      WORKERS: worker-1:worker-1:8081,worker-2:worker-2:8081,worker-3:worker-3:8081
+      COORDS_SYNC_DIR: /shared-coords
+      SYNC_INTERVAL: "3"
+    volumes:
+      - shared-coords:/shared-coords
+    depends_on:
+      - worker-1
+      - worker-2
+      - worker-3
+    restart: unless-stopped
+
+  # 每加一个 worker 按此模板复制：服务名/host 改为 worker-N，
+  # noVNC 宿主端口依次顺延（5805、5806 ...），
+  # 并在 gateway 的 WORKERS 里追加 worker-N:worker-N:8081。
+  worker-1:
+    image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile:latest
+    container_name: turnstile-worker-1
+    shm_size: "2g"
+    environment:
+      TZ: UTC
+      DISPLAY_WIDTH: "1280"
+      DISPLAY_HEIGHT: "800"
+      # NAT4 内网直接暴露；如需密码取消下一行注释
+      # VNC_PASSWORD: changeme
+    volumes:
+      - worker-data-1:/config
+      - shared-coords:/shared-coords/worker-1
+    ports:
+      - "5802:5800"
+    restart: unless-stopped
+
+  worker-2:
+    image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile:latest
+    container_name: turnstile-worker-2
+    shm_size: "2g"
+    environment:
+      TZ: UTC
+      DISPLAY_WIDTH: "1280"
+      DISPLAY_HEIGHT: "800"
+      # VNC_PASSWORD: changeme
+    volumes:
+      - worker-data-2:/config
+      - shared-coords:/shared-coords/worker-2
+    ports:
+      - "5803:5800"
+    restart: unless-stopped
+
+  worker-3:
+    image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile:latest
+    container_name: turnstile-worker-3
+    shm_size: "2g"
+    environment:
+      TZ: UTC
+      DISPLAY_WIDTH: "1280"
+      DISPLAY_HEIGHT: "800"
+      # VNC_PASSWORD: changeme
+    volumes:
+      - worker-data-3:/config
+      - shared-coords:/shared-coords/worker-3
+    ports:
+      - "5804:5800"
+    restart: unless-stopped
+
+volumes:
+  shared-coords:
+  worker-data-1:
+  worker-data-2:
+  worker-data-3:
