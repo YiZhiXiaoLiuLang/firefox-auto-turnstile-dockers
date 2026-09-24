@@ -14,10 +14,17 @@
 
 ## 部署
 
+两个版本任选其一（同一台机器上不要同时跑，端口会冲突）：
+
 ```bash
-docker compose pull
-docker compose up -d
+# 3 worker 版（VNC: 5802-5804）
+docker compose -f docker-compose.yml pull && docker compose -f docker-compose.yml up -d
+
+# 8 worker 版（VNC: 5802-5809）
+docker compose -f docker-compose.x8.yml pull && docker compose -f docker-compose.x8.yml up -d
 ```
+
+网关镜像一次构建，两个版本共用（worker 列表由 `WORKERS` 环境变量驱动）。
 
 首次校准：浏览器打开 `http://<host>:5802`（或 5803/5804），在该站点的验证页
 上点一次复选框；网关每 3 秒把校准坐标同步给所有 worker。

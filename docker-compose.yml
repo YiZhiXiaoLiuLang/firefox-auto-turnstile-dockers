@@ -1,3 +1,5 @@
+name: turnstile-x3
+
 services:
   gateway:
     image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile-dockers-gateway:latest
@@ -19,7 +21,7 @@ services:
     restart: unless-stopped
 
   # 每加一个 worker 按此模板复制：服务名/host 改为 worker-N，
-  # noVNC 宿主端口依次顺延（5805、5806 ...），
+  # noVNC 宿主端口依次顺延，
   # 并在 gateway 的 WORKERS 里追加 worker-N:worker-N:8081。
   worker-1:
     image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile:latest
