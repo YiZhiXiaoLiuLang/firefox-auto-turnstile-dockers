@@ -4,11 +4,12 @@ services:
   gateway:
     image: ghcr.io/yizhixiaoliulang/firefox-auto-turnstile-dockers-gateway:latest
     container_name: turnstile-gateway
-    ports:
-      - "8081:8081"
+    network_mode: host
+    # host 网络下网关直接监听宿主 8081，不走 docker 端口映射；
+    # 代价是解析不了 compose 服务名，workers 改经宿主端口访问（见 WORKERS）。
     environment:
       TZ: UTC
-      WORKERS: worker-1:worker-1:8081,worker-2:worker-2:8081,worker-3:worker-3:8081,worker-4:worker-4:8081,worker-5:worker-5:8081,worker-6:worker-6:8081,worker-7:worker-7:8081,worker-8:worker-8:8081
+      WORKERS: worker-1:127.0.0.1:18081,worker-2:127.0.0.1:18082,worker-3:127.0.0.1:18083,worker-4:127.0.0.1:18084,worker-5:127.0.0.1:18085,worker-6:127.0.0.1:18086,worker-7:127.0.0.1:18087,worker-8:127.0.0.1:18088
       COORDS_SYNC_DIR: /shared-coords
       SYNC_INTERVAL: "3"
     volumes:
@@ -41,6 +42,7 @@ services:
       - worker-data-1:/config
       - shared-coords:/shared-coords/worker-1
     ports:
+      - "127.0.0.1:18081:8081"
       - "5802:5800"
     restart: unless-stopped
 
@@ -57,6 +59,7 @@ services:
       - worker-data-2:/config
       - shared-coords:/shared-coords/worker-2
     ports:
+      - "127.0.0.1:18082:8081"
       - "5803:5800"
     restart: unless-stopped
 
@@ -73,6 +76,7 @@ services:
       - worker-data-3:/config
       - shared-coords:/shared-coords/worker-3
     ports:
+      - "127.0.0.1:18083:8081"
       - "5804:5800"
     restart: unless-stopped
 
@@ -89,6 +93,7 @@ services:
       - worker-data-4:/config
       - shared-coords:/shared-coords/worker-4
     ports:
+      - "127.0.0.1:18084:8081"
       - "5805:5800"
     restart: unless-stopped
 
@@ -105,6 +110,7 @@ services:
       - worker-data-5:/config
       - shared-coords:/shared-coords/worker-5
     ports:
+      - "127.0.0.1:18085:8081"
       - "5806:5800"
     restart: unless-stopped
 
@@ -121,6 +127,7 @@ services:
       - worker-data-6:/config
       - shared-coords:/shared-coords/worker-6
     ports:
+      - "127.0.0.1:18086:8081"
       - "5807:5800"
     restart: unless-stopped
 
@@ -137,6 +144,7 @@ services:
       - worker-data-7:/config
       - shared-coords:/shared-coords/worker-7
     ports:
+      - "127.0.0.1:18087:8081"
       - "5808:5800"
     restart: unless-stopped
 
@@ -153,6 +161,7 @@ services:
       - worker-data-8:/config
       - shared-coords:/shared-coords/worker-8
     ports:
+      - "127.0.0.1:18088:8081"
       - "5809:5800"
     restart: unless-stopped
 

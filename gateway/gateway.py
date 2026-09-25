@@ -347,7 +347,7 @@ class Handler(BaseHTTPRequestHandler):
         last_code, last_obj = 503, {"ok": False, "error": "no worker accepted the task"}
         for w in candidates:
             try:
-                code, obj = _request(w, "POST", "/solve",
+                code, obj = _request(w, "POST", "/solve", body=payload,
                                      timeout=timeout + 180)
             except (OSError, http.client.HTTPException) as e:
                 print("[gw] forward to %s failed: %s" % (w["name"], e),
